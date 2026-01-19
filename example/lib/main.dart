@@ -8,182 +8,396 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'FontFit Demo',
       theme: ThemeData(
-     
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
       ),
-      home: const Demo2( ),
+      home: const FontFitShowcase(),
     );
   }
 }
- 
- 
 
-class Demo extends StatelessWidget {
-  const Demo({super.key});
+class FontFitShowcase extends StatelessWidget {
+  const FontFitShowcase({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('SafeText Demo')),
-        body: Center(
-          child: SizedBox(
-            // width: double.infinity,
-            child: FontFit(
-              
-              'A very very very long ksdncksdjn sdkcnksn  dkjcnskdjncdscnldsc lakncsalkjncs dclkjsdcsd clkjscnsd cbdsfc djsa c ashjdlbcaksdbcas dclasjkdcnas dcjlksadncasl kdc',
-              style: const TextStyle(fontSize: 24),
-              minFontSize: 10,
-              maxFontSize: 23,
-              maxLines: 5,
-            ),
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('FontFit Showcase'),
+          bottom: const TabBar(
+            isScrollable: true,
+            tabs: [
+              Tab(text: 'Cards & Headers'),
+              Tab(text: 'Buttons & Chips'),
+              Tab(text: 'Responsive'),
+              Tab(text: 'List Performance'),
+            ],
           ),
+        ),
+        body: const TabBarView(
+          children: [
+            CardsDemoTab(),
+            ButtonsDemoTab(),
+            ResponsiveDemoTab(),
+            ListPerformanceTab(),
+          ],
         ),
       ),
     );
   }
 }
 
- 
-class Demo2 extends StatelessWidget {
-  const Demo2({super.key});
+// ---------------------------------------------------------------------------
+// TAB 1: Real-world Cards & Headers
+// ---------------------------------------------------------------------------
+class CardsDemoTab extends StatelessWidget {
+  const CardsDemoTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('FontFit Demo')),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const SectionHeader('Product Cards'),
+        SizedBox(
+          height: 140,
+          child: Row(
             children: [
-              // Test inside a Row
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      color: Colors.blue.shade50,
-                      padding: const EdgeInsets.all(8),
-                      child: FontFit(
-                        'Row Item 1: Very very long text that should shrink nicely',
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        minFontSize: 8,
-                        maxFontSize: 24,
-                        maxLines: 2,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Colors.green.shade50,
-                      padding: const EdgeInsets.all(8),
-                      child: FontFit(
-                        'Row Item 2: Another long text to test side by side shrink',
-                        style: const TextStyle(fontSize: 20),
-                        minFontSize: 10,
-                        maxFontSize: 22,
-                        maxLines: 3,
-                      ),
-                    ),
-                  ),
-                ],
+              _buildProductCard(
+                title: 'Wireless Headphones Version',
+                price: '\$199.99',
+                color: Colors.blue.shade50,
               ),
-              const SizedBox(height: 20),
-
-              // Test inside a Column with Expanded
-              Container(
-                height: 200,
+              const SizedBox(width: 10),
+              _buildProductCard(
+                title: 'Super Ultra Premium 4K Gaming Monitor 144Hz',
+                price: '\$459.00',
                 color: Colors.orange.shade50,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        const SectionHeader('News Headlines (Fixed Height)'),
+        Container(
+          height: 80,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.newspaper, size: 40, color: Colors.indigo),
+              const SizedBox(width: 12),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: FontFit(
-                        'This is inside a Column → Expanded widget, text should shrink vertically if needed',
-                        style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                        'Breaking: Flutter 4.0 Release Changes Everything We Know About Widgets',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                        maxLines: 2,
                         minFontSize: 12,
-                        maxFontSize: 28,
-                        maxLines: 4,
                       ),
                     ),
-                    Expanded(
-                      child: FontFit(
-                        'Second Expanded inside Column, more text to see balancing of available space.',
-                        style: const TextStyle(fontSize: 20, color: Colors.deepPurple),
-                        minFontSize: 10,
-                        maxFontSize: 22,
-                        maxLines: 2,
-                      ),
+                    const Text(
+                      '2 hours ago',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Test inside a Card with padding
-              Card(
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: FontFit(
-                    'This is a Card. Sometimes cards have restricted width/height. '
-                    'Let’s add more and more text to see if the FontFit adjusts gracefully.',
-                    style: const TextStyle(fontSize: 24),
-                    minFontSize: 8,
-                    maxFontSize: 24,
-                    maxLines: 6,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Test inside a GridView (nested in SizedBox for height)
-              SizedBox(
-                height: 180,
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 2.5,
-                  children: List.generate(4, (index) {
-                    return Container(
-                      margin: const EdgeInsets.all(8),
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.pink.shade50,
-                      child: FontFit(
-                        'Grid Item #$index — Long text inside a grid cell, should shrink properly.',
-                        style: const TextStyle(fontSize: 20),
-                        minFontSize: 10,
-                        maxFontSize: 22,
-                        maxLines: 3,
-                      ),
-                    );
-                  }),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Test inside a SingleChildScrollView
-              Container(
-                height: 150,
-                color: Colors.teal.shade50,
-                child: SingleChildScrollView(
-                  child: FontFit(
-                    'Scrollable area → A very very long text that should shrink, '
-                    'but we also allow scrolling so it shouldn’t break anything. '
-                    'This is for testing edge cases when text is both shrinkable and scrollable. '
-                    'Keep adding more lines to stress test.',
-                    style: const TextStyle(fontSize: 22),
-                    minFontSize: 8,
-                    maxFontSize: 22,
-                    maxLines: 50,
-                  ),
-                ),
-              ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductCard({
+    required String title,
+    required String price,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.shopping_bag_outlined, size: 32),
+            const Spacer(),
+            // The constraint: Title must fit in 2 lines max
+            SizedBox(
+              // height: 40,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FontFit(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  minFontSize: 10,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(price, style: const TextStyle(fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TAB 2: Buttons & Chips
+// ---------------------------------------------------------------------------
+class ButtonsDemoTab extends StatelessWidget {
+  const ButtonsDemoTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader('Resizing Buttons'),
+          const Text(
+            'These buttons have fixed widths. The text shrinks to fit.',
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildFixedButton("OK", width: 80),
+              const SizedBox(width: 10),
+              _buildFixedButton("Submit Order", width: 100),
+              const SizedBox(width: 10),
+              _buildFixedButton("Add to Shopping Cart Now", width: 120),
+            ],
+          ),
+          const SizedBox(height: 30),
+          const SectionHeader('Status Chips'),
+          Container(
+            width: 150,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            child: Column(
+              children: [
+                _buildChip('Active'),
+                const SizedBox(height: 8),
+                _buildChip('Pending Review Authorization'),
+                const SizedBox(height: 8),
+                _buildChip('Cancelled by User (Late)'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFixedButton(String label, {required double width}) {
+    return Container(
+      width: width,
+      height: 45,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.indigo,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: FontFit(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        maxLines: 1,
+        minFontSize: 8,
+      ),
+    );
+  }
+
+  Widget _buildChip(String label) {
+    return Container(
+      height: 30,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.indigo.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.indigo.shade100),
+      ),
+      child: FontFit(
+        label,
+        style: TextStyle(
+          color: Colors.indigo.shade800,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TAB 3: Responsive Slider Demo
+// ---------------------------------------------------------------------------
+class ResponsiveDemoTab extends StatefulWidget {
+  const ResponsiveDemoTab({super.key});
+
+  @override
+  State<ResponsiveDemoTab> createState() => _ResponsiveDemoTabState();
+}
+
+class _ResponsiveDemoTabState extends State<ResponsiveDemoTab> {
+  double _width = 300;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Drag slider to resize',
+          style: TextStyle(color: Colors.grey),
+        ),
+        Slider(
+          value: _width,
+          min: 50,
+          max: 350,
+          onChanged: (v) => setState(() => _width = v),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: _width,
+          height: 100,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.indigo, width: 2),
+            color: Colors.indigo.shade50,
+          ),
+          child: Center(
+            child: FontFit(
+              'Resize Me!',
+              style: const TextStyle(
+                fontSize: 80,
+                fontWeight: FontWeight.bold,
+                color: Colors.indigo,
+              ),
+              maxLines: 1,
+              minFontSize: 10,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text('Width: ${_width.toStringAsFixed(1)}'),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TAB 4: List Performance Test
+// ---------------------------------------------------------------------------
+class ListPerformanceTab extends StatelessWidget {
+  const ListPerformanceTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(12),
+          child: Text(
+            'Rendering 1000 items. Thanks to optimizations in v0.0.2 (Cached TextPainter), scrolling should remain smooth.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: 1000,
+            itemBuilder: (context, index) {
+              // Alternate long/short text
+              final text = index % 2 == 0
+                  ? 'Item #$index'
+                  : 'Item #$index has significantly longer detailed text to force resizing logic.';
+
+              return Container(
+                height: 60,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(child: Text('${index % 10}')),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FontFit(
+                        text,
+                        style: const TextStyle(fontSize: 22),
+                        maxLines: 1,
+                        minFontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SectionHeader extends StatelessWidget {
+  final String title;
+  const SectionHeader(this.title, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey.shade800,
         ),
       ),
     );
