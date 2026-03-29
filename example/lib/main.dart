@@ -125,6 +125,54 @@ class CardsDemoTab extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        const SectionHeader('Rich Text Support (New in 0.0.3)'),
+        Container(
+          height: 100,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Center(
+            child: FontFit.rich(
+              const TextSpan(
+                text: 'Beautiful ',
+                style: TextStyle(color: Colors.black87),
+                children: [
+                  TextSpan(
+                    text: 'Gradient',
+                    style: TextStyle(
+                      color: Colors.pinkAccent,
+                      fontWeight: FontWeight.w900,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' Styled ',
+                    style: TextStyle(color: Colors.indigoAccent, fontStyle: FontStyle.italic),
+                  ),
+                  TextSpan(
+                    text: 'Rich Text That Shrinks!',
+                    style: TextStyle(color: Colors.teal),
+                  ),
+                ],
+              ),
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              maxLines: 2,
+              minFontSize: 10,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
       ],
     );
   }

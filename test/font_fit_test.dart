@@ -62,4 +62,61 @@ void main() {
     final textWidget = tester.widget<Text>(find.byType(Text));
     expect(textWidget.style?.fontSize, greaterThanOrEqualTo(12));
   });
+
+  testWidgets('FontFit.rich renders text', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: FontFit.rich(
+            TextSpan(
+              text: 'Rich ',
+              children: [
+                TextSpan(text: 'Text', style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            style: TextStyle(fontSize: 24),
+            minFontSize: 10,
+            maxLines: 1,
+          ),
+        ),
+      ),
+    );
+
+    // Find our widget
+    expect(find.byType(RichText), findsWidgets);
+    expect(find.text('Rich Text', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('FontFit.rich scales text down when constrained', (WidgetTester tester) async {
+    // Give a tiny width so text must shrink
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: SizedBox(
+          width: 50,
+          child: FontFit.rich(
+            TextSpan(
+              text: 'Very long ',
+              children: [
+                TextSpan(text: 'rich text', style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            style: TextStyle(fontSize: 40),
+            minFontSize: 8,
+            maxLines: 1,
+          ),
+        ),
+      ),
+    );
+
+    final textWidget = tester.widget<Text>(find.byType(Text));
+
+    // For rich text, the scaling is done via textScaleFactor instead of copyWith(fontSize)
+    // ignore: deprecated_member_use
+    final textScaleFactor = textWidget.textScaleFactor ?? 1.0;
+    
+    // Scale factor should be less than 1.0 because it's constrained (base size is 40)
+    expect(textScaleFactor, lessThan(1.0));
+    // Min allowed scale is 8/40 = 0.2
+    expect(textScaleFactor, greaterThanOrEqualTo(0.2));
+  });
 }

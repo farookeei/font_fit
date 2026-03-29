@@ -67,7 +67,6 @@ double runV2Algorithm(
 
   final style = const TextStyle(fontSize: 20);
   final precision = 0.25;
-  final scale = 1.0;
   final textDir = TextDirection.ltr;
 
   // Optimization #1: Cached TextPainter
