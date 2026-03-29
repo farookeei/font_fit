@@ -1,3 +1,10 @@
+## 0.0.3
+
+- **Feature**: Added `FontFit.rich(InlineSpan textSpan)` constructor! You can now use `TextSpan` and `WidgetSpan` just like `Text.rich()`, retaining different colors, fonts, and inline styles while safely auto-shrinking when constrained.
+- **Fix**: Addressed an edge case where the final rendered text could ignore `respectTextScaleFactor = false`.
+
+---
+
 ## 0.0.2
 
 ### Performance Optimizations

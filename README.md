@@ -20,7 +20,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  font_fit: ^0.0.1
+  font_fit: ^0.0.3
 
 Run:
 
@@ -40,3 +40,21 @@ FontFit(
 )
 
 FontFit will try to render the text at the provided style size (24 in this example), and shrink down until it fits (but never below minFontSize).
+
+### Rich Text Support
+
+Need different colors or inline styles? Use `FontFit.rich`:
+
+```dart
+FontFit.rich(
+  TextSpan(
+    text: 'Hello ',
+    children: [
+      TextSpan(text: 'beautiful ', style: TextStyle(color: Colors.blue)),
+      TextSpan(text: 'world!', style: TextStyle(fontWeight: FontWeight.bold)),
+    ],
+  ),
+  style: const TextStyle(fontSize: 30),
+  maxLines: 1,
+)
+```
