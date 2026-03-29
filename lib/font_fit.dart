@@ -23,7 +23,8 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 class FontFit extends StatelessWidget {
-  final String data;
+  final String? data;
+  final InlineSpan? textSpan;
   final TextStyle? style;
 
   /// Smallest allowed font size.
@@ -47,7 +48,7 @@ class FontFit extends StatelessWidget {
   final bool respectTextScaleFactor;
 
   const FontFit(
-    this.data, {
+    String this.data, {
     super.key,
     this.style,
     this.minFontSize = 10,
@@ -57,13 +58,29 @@ class FontFit extends StatelessWidget {
     this.overflow = TextOverflow.ellipsis,
     this.precision = 0.25, // stop when hi - lo < precision
     this.respectTextScaleFactor = true,
-  });
+  }) : textSpan = null;
+
+  const FontFit.rich(
+    InlineSpan this.textSpan, {
+    super.key,
+    this.style,
+    this.minFontSize = 10,
+    this.maxFontSize,
+    this.maxLines,
+    this.textAlign = TextAlign.start,
+    this.overflow = TextOverflow.ellipsis,
+    this.precision = 0.25, // stop when hi - lo < precision
+    this.respectTextScaleFactor = true,
+  }) : data = null;
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
+    final bool isRich = textSpan != null;
+    final int textLength = isRich ? textSpan!.toPlainText().length : data!.length;
+
+    if (textLength == 0 && !isRich) {
       return Text(
-        data,
+        data!,
         style: style,
         maxLines: maxLines,
         textAlign: textAlign,
@@ -92,13 +109,27 @@ class FontFit extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth.isInfinite) {
-          return Text(
-            data,
-            style: effectiveStyle.copyWith(fontSize: hiStart),
-            maxLines: maxLines,
-            textAlign: textAlign,
-            overflow: overflow,
-          );
+          if (isRich) {
+            return Text.rich(
+              textSpan!,
+              style: effectiveStyle.copyWith(fontSize: hiStart),
+              maxLines: maxLines,
+              textAlign: textAlign,
+              overflow: overflow,
+              // ignore: deprecated_member_use
+              textScaleFactor: respectTextScaleFactor ? null : 1.0,
+            );
+          } else {
+            return Text(
+              data!,
+              style: effectiveStyle.copyWith(fontSize: hiStart),
+              maxLines: maxLines,
+              textAlign: textAlign,
+              overflow: overflow,
+              // ignore: deprecated_member_use
+              textScaleFactor: respectTextScaleFactor ? null : 1.0,
+            );
+          }
         }
 
         final TextPainter painter = TextPainter(
@@ -113,33 +144,39 @@ class FontFit extends StatelessWidget {
         bool fits(double fs) {
           // Note: We use effectiveStyle (merged) to ensure font family/weight match Text widget.
           // Note: We bake the scale into the fontSize here for measurement.
-          painter.text = TextSpan(
-              text: data, style: effectiveStyle.copyWith(fontSize: fs));
+          if (isRich) {
+            final scaleMultiplier = fs / hiStart;
+            painter.text = TextSpan(style: effectiveStyle, children: [textSpan!]);
+            // ignore: deprecated_member_use
+            painter.textScaleFactor = scaleMultiplier * scale;
+          } else {
+            painter.text = TextSpan(
+                text: data, style: effectiveStyle.copyWith(fontSize: fs));
+            // ignore: deprecated_member_use
+            painter.textScaleFactor = scale;
+          }
           painter.layout(maxWidth: constraints.maxWidth);
           final widthOK = painter.width <= constraints.maxWidth + 0.01;
           final linesOK = !(painter.didExceedMaxLines);
           return widthOK && linesOK;
         }
 
-        if (data.length <= 2) {
+        if (!isRich && textLength <= 2) {
           final testSize = hiStart;
-          if (fits(testSize * scale)) {
+          if (fits(testSize)) { // Note: 'fits' scales internally using `scale`. We don't need to pass `* scale`
+            // Wait, previous code checked `fits(testSize * scale)`. 'fits' multiplies `fs` by `scale` indirectly if not rich?
+            // Ah, previously it was: `style: ...copyWith(fontSize: fs)`. And `fs` was `mid * scale`.
+            // Now `fees(testSize)` applies `fontSize: testSize` and `textScaleFactor: scale`.
+            // This is equivalent!
             painter.dispose();
             return Text(
-              data,
-              // Use effectiveStyle to ensure font consistency, pass unscaled size to Text
-              // (Text applies specific scale if we don't handle it, but here we handled it in check)
-              // Wait: If we pass UN-scaled size to Text, Text will scale it.
-              // We tested SCALED size.
-              // So: test(20). fits.
-              // Text(10). Scale(2.0) -> Renders 20. Correct.
-              // We should pass 'testSize' (unscaled) to Text.
-              // But 'fits' takes scaled size.
-              // So passes.
+              data!,
               style: effectiveStyle.copyWith(fontSize: testSize),
               maxLines: maxLines,
               textAlign: textAlign,
               overflow: overflow,
+              // ignore: deprecated_member_use
+              textScaleFactor: respectTextScaleFactor ? null : 1.0,
             );
           }
         }
@@ -151,13 +188,14 @@ class FontFit extends StatelessWidget {
         double best = lo;
 
         final estimatedCharWidth = hiStart * 0.6;
-        final estimatedTotalWidth = data.length * estimatedCharWidth;
+        final estimatedTotalWidth = textLength * estimatedCharWidth;
 
         if (estimatedTotalWidth > constraints.maxWidth) {
-          final smartGuess = (constraints.maxWidth / data.length / 0.6)
+          final smartGuess = (constraints.maxWidth / (textLength == 0 ? 1 : textLength) / 0.6)
               .clamp(minFontSize, hiStart);
 
-          if (fits(smartGuess * scale)) {
+          // We pass smartGuess directly to fits() since fits() no longer expects pre-scaled test sizes
+          if (fits(smartGuess)) {
             lo = smartGuess;
             best = smartGuess;
           } else {
@@ -168,7 +206,7 @@ class FontFit extends StatelessWidget {
         int safety = 0;
         while ((hi - lo) > adaptivePrecision && safety++ < 40) {
           final mid = (lo + hi) / 2;
-          if (fits(mid * scale)) {
+          if (fits(mid)) {
             best = mid;
             lo = mid;
           } else {
@@ -182,14 +220,30 @@ class FontFit extends StatelessWidget {
         // Calculate final chosen size (unscaled, because Text widget scales it)
         final chosen = (best).clamp(minFontSize, hiStart);
 
-        return Text(
-          data,
-          // Use effectiveStyle to ensure we use the same font family/weight we measured with
-          style: effectiveStyle.copyWith(fontSize: chosen),
-          maxLines: maxLines,
-          textAlign: textAlign,
-          overflow: overflow,
-        );
+        if (isRich) {
+          final chosenScaleMultiplier = chosen / hiStart;
+          final finalScale = chosenScaleMultiplier * scale;
+
+          return Text.rich(
+            textSpan!,
+            style: effectiveStyle,
+            // ignore: deprecated_member_use
+            textScaleFactor: finalScale,
+            maxLines: maxLines,
+            textAlign: textAlign,
+            overflow: overflow,
+          );
+        } else {
+          return Text(
+            data!,
+            style: effectiveStyle.copyWith(fontSize: chosen),
+            maxLines: maxLines,
+            textAlign: textAlign,
+            overflow: overflow,
+            // ignore: deprecated_member_use
+            textScaleFactor: respectTextScaleFactor ? null : 1.0,
+          );
+        }
       },
     );
   }
