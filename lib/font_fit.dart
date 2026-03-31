@@ -158,7 +158,10 @@ class FontFit extends StatelessWidget {
           painter.layout(maxWidth: constraints.maxWidth);
           final widthOK = painter.width <= constraints.maxWidth + 0.01;
           final linesOK = !(painter.didExceedMaxLines);
-          return widthOK && linesOK;
+          final heightOK = constraints.hasBoundedHeight
+              ? painter.height <= constraints.maxHeight + 0.01
+              : true;
+          return widthOK && linesOK && heightOK;
         }
 
         if (!isRich && textLength <= 2) {
