@@ -1,6 +1,7 @@
 ## 0.0.3
 
 - **Feature**: Added `FontFit.rich(InlineSpan textSpan)` constructor! You can now use `TextSpan` and `WidgetSpan` just like `Text.rich()`, retaining different colors, fonts, and inline styles while safely auto-shrinking when constrained.
+- **Fix**: Added support for vertical constraints. `FontFit` now respects `maxHeight` when in fixed-height containers, preventing vertical text clipping.
 - **Fix**: Addressed an edge case where the final rendered text could ignore `respectTextScaleFactor = false`.
 
 ---

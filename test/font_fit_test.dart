@@ -119,4 +119,33 @@ void main() {
     // Min allowed scale is 8/40 = 0.2
     expect(textScaleFactor, greaterThanOrEqualTo(0.2));
   });
+
+  testWidgets('FontFit respects vertical constraints', (WidgetTester tester) async {
+    // Give a finite height but the width is infinite.
+    // The text should shrink to fit the height.
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Center(
+          child: SizedBox(
+            height: 20,
+            width: 1000, // plenty of width
+            child: FontFit(
+              'Tall text that should shrink to fit height',
+              style: TextStyle(fontSize: 40),
+              minFontSize: 8,
+              maxLines: 1,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final textWidget = tester.widget<Text>(find.byType(Text));
+
+    // Should shrink because 40 is taller than 20
+    expect(textWidget.style?.fontSize, lessThan(40));
+    // It should fit within 20. At size 20 it might still be too tall due to line height,
+    // so it should probably be around 14-16.
+    expect(textWidget.style?.fontSize, lessThanOrEqualTo(20));
+  });
 }
