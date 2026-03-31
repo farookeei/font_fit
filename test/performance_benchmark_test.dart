@@ -11,10 +11,10 @@ double runV1Algorithm(
   double maxFontSize,
   int maxLines,
 ) {
-  final style = const TextStyle(fontSize: 20); // Base style
-  final precision = 0.25;
-  final scale = 1.0;
-  final textDir = TextDirection.ltr;
+  const style = TextStyle(fontSize: 20); // Base style
+  const precision = 0.25;
+  const scale = 1.0;
+  const textDir = TextDirection.ltr;
 
   // Internal fits function (recreated from v0.0.1)
   bool fits(double fs) {
@@ -65,9 +65,9 @@ double runV2Algorithm(
   // Optimization #4: Empty check (Simulated here, though loop handles it)
   if (data.isEmpty) return minFontSize;
 
-  final style = const TextStyle(fontSize: 20);
-  final precision = 0.25;
-  final textDir = TextDirection.ltr;
+  const style = TextStyle(fontSize: 20);
+  const precision = 0.25;
+  const textDir = TextDirection.ltr;
 
   // Optimization #1: Cached TextPainter
   final painter = TextPainter(
@@ -148,6 +148,7 @@ void main() {
     // ---------------------------------------------------
     // WARMUP (JIT Compilation)
     // ---------------------------------------------------
+    // ignore: avoid_print
     print('🔥 Warming up JIT...');
     for (int i = 0; i < 100; i++) {
       runV1Algorithm(mediumText, maxWidth, minFS, maxFS, maxLines);
@@ -157,9 +158,10 @@ void main() {
     // ---------------------------------------------------
     // BENCHMARK EXECUTION
     // ---------------------------------------------------
-    final int iterations = 2000;
+    const int iterations = 2000;
 
-    print('\n🚀 STARTING BENCHMARK ($iterations iterations each)\n');
+    // ignore: avoid_print
+    print('\n STARTING BENCHMARK ($iterations iterations each)\n');
 
     // --- CASE 1: SHORT TEXT ---
     final v1Short = Stopwatch()..start();
@@ -204,8 +206,11 @@ void main() {
     // REPORTING
     // ---------------------------------------------------
 
-    print('📊 RESULTS TABLE (Lower is Better)\n');
+    // ignore: avoid_print
+    print(' RESULTS TABLE (Lower is Better)\n');
+    // ignore: avoid_print
     print('| Test Case   | V1 Time (ms) | V2 Time (ms) | Improvement |');
+    // ignore: avoid_print
     print('|-------------|--------------|--------------|-------------|');
 
     void report(String name, Stopwatch v1, Stopwatch v2) {
@@ -214,6 +219,7 @@ void main() {
       final improvement = ((t1 - t2) / t1 * 100).toStringAsFixed(1);
       final emoji = t2 < t1 ? '✅' : '❌';
 
+      // ignore: avoid_print
       print(
           '| $name | ${t1.toString().padLeft(12)} | ${t2.toString().padLeft(12)} | $emoji $improvement%  |');
     }
@@ -222,9 +228,13 @@ void main() {
     report('Medium Text', v1Med, v2Med);
     report('Long Text  ', v1Long, v2Long);
 
+    // ignore: avoid_print
     print('\n---------------------------------------------------');
+    // ignore: avoid_print
     print('Note: "Short Text" uses the single-char optimization.');
+    // ignore: avoid_print
     print('Note: "Long Text" uses the smart initial guess.');
+    // ignore: avoid_print
     print('---------------------------------------------------\n');
   });
 }
