@@ -4,7 +4,7 @@
 - **Fix**: Added support for vertical constraints. `FontFit` now respects `maxHeight` when in fixed-height containers, preventing vertical text clipping.
 - **Fix**: Addressed an edge case where the final rendered text could ignore `respectTextScaleFactor = false`.
 
----
+
 
 ## 0.0.2
 
@@ -24,7 +24,7 @@
 - More reliable edge case handling
 - Better code quality and maintainability
 
----
+
 
 ## 0.0.1
 
