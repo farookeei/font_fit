@@ -4,15 +4,6 @@ import 'package:flutter/material.dart';
 /// font size down (between [minFontSize] and [maxFontSize]) to fit
 /// within the available width/lines, using a binary search for speed.
 ///
-/// **Version 0.0.2 Improvements:**
-/// - Performance: Cached TextPainter for faster repeated builds
-/// - Performance: Smart initial guess reduces iterations
-/// - Performance: Adaptive precision based on font size
-/// - Bug fix: Empty string handling
-/// - Bug fix: Single character optimization
-/// - Bug fix: Improved null safety
-/// - Bug fix: Ensure TextPainter uses same font scaling/styling as Text widget
-///
 /// Typical usage:
 /// ```dart
 /// FontFit(
@@ -23,30 +14,63 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 class FontFit extends StatelessWidget {
+  /// The text to display. 
+  /// 
+  /// Used in the default constructor. For [InlineSpan] support, 
+  /// use [FontFit.rich].
   final String? data;
+
+  /// The text to display as an [InlineSpan].
+  /// 
+  /// Used in the [FontFit.rich] constructor.
   final InlineSpan? textSpan;
+
+  /// If non-null, the style to use for this text.
+  /// 
+  /// If the style's fontSize is null, it will fall back to 
+  /// [DefaultTextStyle].
   final TextStyle? style;
 
-  /// Smallest allowed font size.
+  /// The smallest allowed font size.
+  /// 
+  /// Defaults to 10. The font size will never scale below this value, 
+  /// even if the text overflows.
   final double minFontSize;
 
-  /// Largest allowed font size.
+  /// The largest allowed font size.
   ///
-  /// Defaults to the incoming [style.fontSize] (or DefaultTextStyle),
+  /// Defaults to the incoming [style.fontSize] (or [DefaultTextStyle]),
   /// which is what most people expect: "try to render at this size,
   /// but shrink if needed."
   final double? maxFontSize;
 
-  /// Max lines to render. If null, text can grow vertically.
+  /// The maximum number of lines for the text to span.
+  /// 
+  /// If the text exceeds this limit, the font size will be reduced.
+  /// If null, the text can grow vertically indefinitely.
   final int? maxLines;
 
+  /// How the text should be aligned horizontally.
   final TextAlign textAlign;
+
+  /// How visual overflow should be handled.
   final TextOverflow overflow;
+
+  /// The precision of the font size calculation.
+  /// 
+  /// The binary search will stop when the difference between 
+  /// high and low bounds is less than this value. Defaults to 0.25.
   final double precision;
 
-  /// Optional: honor text scale factor. Default: true.
+  /// Whether to honor the system [MediaQuery.textScaleFactor].
+  /// 
+  /// Defaults to true. If false, the text will ignore the system 
+  /// font scaling settings.
   final bool respectTextScaleFactor;
 
+  /// Creates a [FontFit] widget that displays a [String].
+  /// 
+  /// The [data] parameter must not be null.
   const FontFit(
     String this.data, {
     super.key,
@@ -56,10 +80,13 @@ class FontFit extends StatelessWidget {
     this.maxLines,
     this.textAlign = TextAlign.start,
     this.overflow = TextOverflow.ellipsis,
-    this.precision = 0.25, // stop when hi - lo < precision
+    this.precision = 0.25,
     this.respectTextScaleFactor = true,
   }) : textSpan = null;
 
+  /// Creates a [FontFit] widget that displays an [InlineSpan].
+  /// 
+  /// Useful for rich text with multiple styles.
   const FontFit.rich(
     InlineSpan this.textSpan, {
     super.key,
@@ -69,7 +96,7 @@ class FontFit extends StatelessWidget {
     this.maxLines,
     this.textAlign = TextAlign.start,
     this.overflow = TextOverflow.ellipsis,
-    this.precision = 0.25, // stop when hi - lo < precision
+    this.precision = 0.25,
     this.respectTextScaleFactor = true,
   }) : data = null;
 

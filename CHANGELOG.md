@@ -1,4 +1,10 @@
+## 0.0.3+1
+
+- **Documentation**: Achieved 100% API documentation coverage for all public members.
+- **Maintenance**: Added discovery topics (tags) to `pubspec.yaml` for better searchability on pub.dev.
+
 ## 0.0.3
+
 
 - **Feature**: Added `FontFit.rich(InlineSpan textSpan)` constructor! You can now use `TextSpan` and `WidgetSpan` just like `Text.rich()`, retaining different colors, fonts, and inline styles while safely auto-shrinking when constrained.
 - **Fix**: Added support for vertical constraints. `FontFit` now respects `maxHeight` when in fixed-height containers, preventing vertical text clipping.

@@ -20,7 +20,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  font_fit: ^0.0.3
+  font_fit: ^0.0.3+1
 
 Run:
 
