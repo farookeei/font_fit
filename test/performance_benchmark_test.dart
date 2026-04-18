@@ -18,7 +18,10 @@ double runV1Algorithm(
 
   // Internal fits function (recreated from v0.0.1)
   bool fits(double fs) {
-    final span = TextSpan(text: data, style: style.copyWith(fontSize: fs));
+    final span = TextSpan(
+      text: data,
+      style: style.copyWith(fontSize: fs),
+    );
     // V1 created a NEW TextPainter every time
     final tp = TextPainter(
       text: span,
@@ -78,7 +81,10 @@ double runV2Algorithm(
   );
 
   bool fits(double fs) {
-    painter.text = TextSpan(text: data, style: style.copyWith(fontSize: fs));
+    painter.text = TextSpan(
+      text: data,
+      style: style.copyWith(fontSize: fs),
+    );
     painter.layout(maxWidth: maxWidth);
     final widthOK = painter.width <= maxWidth + 0.01;
     final linesOK = !(painter.didExceedMaxLines);
@@ -105,8 +111,10 @@ double runV2Algorithm(
   final estimatedTotalWidth = data.length * estimatedCharWidth;
 
   if (estimatedTotalWidth > maxWidth) {
-    final smartGuess =
-        (maxWidth / data.length / 0.6).clamp(minFontSize, maxFontSize);
+    final smartGuess = (maxWidth / data.length / 0.6).clamp(
+      minFontSize,
+      maxFontSize,
+    );
     if (fits(smartGuess)) {
       lo = smartGuess;
       best = smartGuess;
@@ -131,8 +139,9 @@ double runV2Algorithm(
 }
 
 void main() {
-  testWidgets('Performance Verification: V1 vs V2',
-      (WidgetTester tester) async {
+  testWidgets('Performance Verification: V1 vs V2', (
+    WidgetTester tester,
+  ) async {
     // Setup Test Data
     const shortText = "Hi";
     const mediumText = "FontFit is a drop-in replacement for Text.";
@@ -221,7 +230,8 @@ void main() {
 
       // ignore: avoid_print
       print(
-          '| $name | ${t1.toString().padLeft(12)} | ${t2.toString().padLeft(12)} | $emoji $improvement%  |');
+        '| $name | ${t1.toString().padLeft(12)} | ${t2.toString().padLeft(12)} | $emoji $improvement%  |',
+      );
     }
 
     report('Short Text ', v1Short, v2Short);

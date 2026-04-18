@@ -1,10 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_fit/font_fit.dart';
 
 void main() {
-  testWidgets('FontFit renders text without crashing', (WidgetTester tester) async {
+  testWidgets('FontFit renders text without crashing', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
@@ -22,7 +23,9 @@ void main() {
     expect(find.text('Hello World'), findsOneWidget);
   });
 
-  testWidgets('FontFit scales text down when constrained', (WidgetTester tester) async {
+  testWidgets('FontFit scales text down when constrained', (
+    WidgetTester tester,
+  ) async {
     // Give a tiny width so text must shrink
     await tester.pumpWidget(
       const MaterialApp(
@@ -71,7 +74,10 @@ void main() {
             TextSpan(
               text: 'Rich ',
               children: [
-                TextSpan(text: 'Text', style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(
+                  text: 'Text',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             style: TextStyle(fontSize: 24),
@@ -87,7 +93,9 @@ void main() {
     expect(find.text('Rich Text', findRichText: true), findsOneWidget);
   });
 
-  testWidgets('FontFit.rich scales text down when constrained', (WidgetTester tester) async {
+  testWidgets('FontFit.rich scales text down when constrained', (
+    WidgetTester tester,
+  ) async {
     // Give a tiny width so text must shrink
     await tester.pumpWidget(
       const MaterialApp(
@@ -97,7 +105,10 @@ void main() {
             TextSpan(
               text: 'Very long ',
               children: [
-                TextSpan(text: 'rich text', style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(
+                  text: 'rich text',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             style: TextStyle(fontSize: 40),
@@ -113,14 +124,16 @@ void main() {
     // For rich text, the scaling is done via textScaleFactor instead of copyWith(fontSize)
     // ignore: deprecated_member_use
     final textScaleFactor = textWidget.textScaleFactor ?? 1.0;
-    
+
     // Scale factor should be less than 1.0 because it's constrained (base size is 40)
     expect(textScaleFactor, lessThan(1.0));
     // Min allowed scale is 8/40 = 0.2
     expect(textScaleFactor, greaterThanOrEqualTo(0.2));
   });
 
-  testWidgets('FontFit respects vertical constraints', (WidgetTester tester) async {
+  testWidgets('FontFit respects vertical constraints', (
+    WidgetTester tester,
+  ) async {
     // Give a finite height but the width is infinite.
     // The text should shrink to fit the height.
     await tester.pumpWidget(

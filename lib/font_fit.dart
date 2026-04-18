@@ -14,26 +14,26 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 class FontFit extends StatelessWidget {
-  /// The text to display. 
-  /// 
-  /// Used in the default constructor. For [InlineSpan] support, 
+  /// The text to display.
+  ///
+  /// Used in the default constructor. For [InlineSpan] support,
   /// use [FontFit.rich].
   final String? data;
 
   /// The text to display as an [InlineSpan].
-  /// 
+  ///
   /// Used in the [FontFit.rich] constructor.
   final InlineSpan? textSpan;
 
   /// If non-null, the style to use for this text.
-  /// 
-  /// If the style's fontSize is null, it will fall back to 
+  ///
+  /// If the style's fontSize is null, it will fall back to
   /// [DefaultTextStyle].
   final TextStyle? style;
 
   /// The smallest allowed font size.
-  /// 
-  /// Defaults to 10. The font size will never scale below this value, 
+  ///
+  /// Defaults to 10. The font size will never scale below this value,
   /// even if the text overflows.
   final double minFontSize;
 
@@ -45,7 +45,7 @@ class FontFit extends StatelessWidget {
   final double? maxFontSize;
 
   /// The maximum number of lines for the text to span.
-  /// 
+  ///
   /// If the text exceeds this limit, the font size will be reduced.
   /// If null, the text can grow vertically indefinitely.
   final int? maxLines;
@@ -57,19 +57,19 @@ class FontFit extends StatelessWidget {
   final TextOverflow overflow;
 
   /// The precision of the font size calculation.
-  /// 
-  /// The binary search will stop when the difference between 
+  ///
+  /// The binary search will stop when the difference between
   /// high and low bounds is less than this value. Defaults to 0.25.
   final double precision;
 
   /// Whether to honor the system [MediaQuery.textScaleFactor].
-  /// 
-  /// Defaults to true. If false, the text will ignore the system 
+  ///
+  /// Defaults to true. If false, the text will ignore the system
   /// font scaling settings.
   final bool respectTextScaleFactor;
 
   /// Creates a [FontFit] widget that displays a [String].
-  /// 
+  ///
   /// The [data] parameter must not be null.
   const FontFit(
     String this.data, {
@@ -85,7 +85,7 @@ class FontFit extends StatelessWidget {
   }) : textSpan = null;
 
   /// Creates a [FontFit] widget that displays an [InlineSpan].
-  /// 
+  ///
   /// Useful for rich text with multiple styles.
   const FontFit.rich(
     InlineSpan this.textSpan, {
@@ -103,7 +103,9 @@ class FontFit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isRich = textSpan != null;
-    final int textLength = isRich ? textSpan!.toPlainText().length : data!.length;
+    final int textLength = isRich
+        ? textSpan!.toPlainText().length
+        : data!.length;
 
     if (textLength == 0 && !isRich) {
       return Text(
@@ -118,14 +120,16 @@ class FontFit extends StatelessWidget {
     // Fix: Merge with DefaultTextStyle to ensure we measure with the correct font family/weight
     // The Text widget does this internally, so we must do it manually for TextPainter to match.
     final defaultTextStyle = DefaultTextStyle.of(context).style;
-    final effectiveStyle =
-        style == null ? defaultTextStyle : defaultTextStyle.merge(style);
+    final effectiveStyle = style == null
+        ? defaultTextStyle
+        : defaultTextStyle.merge(style);
 
     // ignore: deprecated_member_use
     final mediaTextScale = MediaQuery.maybeOf(context)?.textScaleFactor ?? 1.0;
     final scale = respectTextScaleFactor ? mediaTextScale : 1.0;
 
-    final double hiStart = maxFontSize ??
+    final double hiStart =
+        maxFontSize ??
         effectiveStyle.fontSize ??
         defaultTextStyle.fontSize ??
         14.0;
@@ -173,12 +177,17 @@ class FontFit extends StatelessWidget {
           // Note: We bake the scale into the fontSize here for measurement.
           if (isRich) {
             final scaleMultiplier = fs / hiStart;
-            painter.text = TextSpan(style: effectiveStyle, children: [textSpan!]);
+            painter.text = TextSpan(
+              style: effectiveStyle,
+              children: [textSpan!],
+            );
             // ignore: deprecated_member_use
             painter.textScaleFactor = scaleMultiplier * scale;
           } else {
             painter.text = TextSpan(
-                text: data, style: effectiveStyle.copyWith(fontSize: fs));
+              text: data,
+              style: effectiveStyle.copyWith(fontSize: fs),
+            );
             // ignore: deprecated_member_use
             painter.textScaleFactor = scale;
           }
@@ -193,7 +202,8 @@ class FontFit extends StatelessWidget {
 
         if (!isRich && textLength <= 2) {
           final testSize = hiStart;
-          if (fits(testSize)) { // Note: 'fits' scales internally using `scale`. We don't need to pass `* scale`
+          if (fits(testSize)) {
+            // Note: 'fits' scales internally using `scale`. We don't need to pass `* scale`
             // Wait, previous code checked `fits(testSize * scale)`. 'fits' multiplies `fs` by `scale` indirectly if not rich?
             // Ah, previously it was: `style: ...copyWith(fontSize: fs)`. And `fs` was `mid * scale`.
             // Now `fees(testSize)` applies `fontSize: testSize` and `textScaleFactor: scale`.
@@ -221,8 +231,9 @@ class FontFit extends StatelessWidget {
         final estimatedTotalWidth = textLength * estimatedCharWidth;
 
         if (estimatedTotalWidth > constraints.maxWidth) {
-          final smartGuess = (constraints.maxWidth / (textLength == 0 ? 1 : textLength) / 0.6)
-              .clamp(minFontSize, hiStart);
+          final smartGuess =
+              (constraints.maxWidth / (textLength == 0 ? 1 : textLength) / 0.6)
+                  .clamp(minFontSize, hiStart);
 
           // We pass smartGuess directly to fits() since fits() no longer expects pre-scaled test sizes
           if (fits(smartGuess)) {

@@ -159,7 +159,10 @@ class CardsDemoTab extends StatelessWidget {
                   ),
                   TextSpan(
                     text: ' Styled ',
-                    style: TextStyle(color: Colors.indigoAccent, fontStyle: FontStyle.italic),
+                    style: TextStyle(
+                      color: Colors.indigoAccent,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                   TextSpan(
                     text: 'Rich Text That Shrinks!',
